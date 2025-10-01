@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # News Platform Application
+  news-platform:
+    build: .
+    container_name: news-platform-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Application Settings
+      - SPRING_APPLICATION_NAME=NewsReadingPlatform
+      - SERVER_PORT=8080
+      - SERVER_SERVLET_CONTEXT_PATH=/
+      
+      # Database Configuration
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:newsdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=false;CASE_INSENSITIVE_IDENTIFIERS=true
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      
+      # JPA/Hibernate Configuration
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
+      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+      
+      # Hibernate Specific Properties
+      - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_TIME_ZONE=UTC
+      - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE=50
+      - SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_UPDATES=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_BATCH_VERSIONED_DATA=true
+      
+      # Database Initialization
+      - SPRING_SQL_INIT_MODE=always
+      - SPRING_SQL_INIT_PLATFORM=h2
+      - SPRING_SQL_INIT_SCHEMA_LOCATIONS=classpath:schema.sql
+      - SPRING_SQL_INIT_DATA_LOCATIONS=classpath:data.sql
+      - SPRING_SQL_INIT_ENCODING=UTF-8
+      - SPRING_SQL_INIT_CONTINUE_ON_ERROR=true
+      
+      # H2 Console
+      - SPRING_H2_CONSOLE_ENABLED=true
+      - SPRING_H2_CONSOLE_PATH=/h2-console
+      - SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=false
+      - SPRING_H2_CONSOLE_SETTINGS_TRACE=false
+      
+      # Connection Pool
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=5
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=20
+      - SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT=300000
+      - SPRING_DATASOURCE_HIKARI_POOL_NAME=NewsHikariCP
+      - SPRING_DATASOURCE_HIKARI_MAX_LIFETIME=1200000
+      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=20000
+      
+      # Cache Configuration
+      - SPRING_CACHE_TYPE=caffeine
+      - SPRING_CACHE_CACHE_NAMES=news,categories,latestNews,trendingNews,categoryNews,allNews,featuredNews,breakingNews,allCategories,featuredCategories,categoryBySlug,categoryByName,categoriesWithNews,topViewedNews,relatedNews,topNews,searchNews
+      - SPRING_CACHE_CAFFEINE_SPEC=maximumSize=1000,expireAfterWrite=3600s
+      
+      # Thymeleaf Configuration
+      - SPRING_THYMELEAF_CACHE=false
+      - SPRING_THYMELEAF_MODE=HTML
+      - SPRING_THYMELEAF_ENCODING=UTF-8
+      - SPRING_THYMELEAF_SERVLET_CONTENT_TYPE=text/html
+      - SPRING_THYMELEAF_PREFIX=classpath:/templates/
+      - SPRING_THYMELEAF_SUFFIX=.html
+      
+      # Logging Configuration
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=INFO
+      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=DEBUG
+      - LOGGING_LEVEL_ORG_HIBERNATE_SQL=DEBUG
+      - LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER=TRACE
+      - LOGGING_PATTERN_CONSOLE=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+      
+      # Server Configuration
+      - SERVER_ERROR_INCLUDE_STACKTRACE=never
+      - SERVER_ERROR_INCLUDE_MESSAGE=always
+      - SERVER_COMPRESSION_ENABLED=true
+      
+      # Actuator Configuration
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=when_authorized
+      
+      # NewsAPI Configuration
+      - NEWSAPI_API_KEY=e38422f6dd594bf5986fae6d858a1d3c
+      - NEWSAPI_BASE_URL=https://newsapi.org/v2
+      - NEWSAPI_PAGE_SIZE=20
+      - NEWSAPI_LANGUAGE=en
+      - NEWSAPI_COUNTRY=us
+      
+      # Security Configuration
+      - SPRING_SECURITY_CSRF_ENABLED=false
+      - SPRING_SECURITY_HEADERS_FRAME_OPTIONS=SAMEORIGIN
+      - SPRING_SECURITY_USER_NAME=admin
+      - SPRING_SECURITY_USER_PASSWORD={noop}admin123
+      - SPRING_SECURITY_USER_ROLES=ADMIN
+      
+    volumes:
+      # Optional: Mount logs directory
+      - ./logs:/app/logs
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  default:
+    name: news-platform-network

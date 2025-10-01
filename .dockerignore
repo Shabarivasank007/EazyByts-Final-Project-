@@ -1,0 +1,53 @@
+# Maven
+demo/target/
+!demo/target/*.jar
+demo/pom.xml.tag
+demo/pom.xml.releaseBackup
+demo/pom.xml.versionsBackup
+demo/pom.xml.next
+demo/release.properties
+demo/dependency-reduced-pom.xml
+demo/buildNumber.properties
+demo/.mvn/timing.properties
+demo/.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# Test files
+demo/src/test/
+
+# Development tools
+demo/.mvn/wrapper/maven-wrapper.properties

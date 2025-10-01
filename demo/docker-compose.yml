@@ -8,8 +8,13 @@ services:
     ports:
       - "8080:8080"
     environment:
+      # Application Settings
+      - SPRING_APPLICATION_NAME=NewsReadingPlatform
+      - SERVER_PORT=8080
+      - SERVER_SERVLET_CONTEXT_PATH=/
+      
       # Database Configuration
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:newsdb
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:newsdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=false;CASE_INSENSITIVE_IDENTIFIERS=true
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=
@@ -18,25 +23,61 @@ services:
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=false
+      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
       
-      # H2 Console (for development)
+      # Database Initialization
+      - SPRING_SQL_INIT_MODE=always
+      - SPRING_SQL_INIT_PLATFORM=h2
+      - SPRING_SQL_INIT_CONTINUE_ON_ERROR=true
+      
+      # H2 Console
       - SPRING_H2_CONSOLE_ENABLED=true
       - SPRING_H2_CONSOLE_PATH=/h2-console
+      - SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=false
+      
+      # Connection Pool
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=5
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=20
+      - SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT=300000
+      - SPRING_DATASOURCE_HIKARI_MAX_LIFETIME=1200000
+      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=20000
       
       # Cache Configuration
       - SPRING_CACHE_TYPE=caffeine
-      - SPRING_CACHE_CAFFEINE_SPEC=maximumSize=1000,expireAfterWrite=1h
+      - SPRING_CACHE_CAFFEINE_SPEC=maximumSize=1000,expireAfterWrite=3600s
+      
+      # Thymeleaf Configuration
+      - SPRING_THYMELEAF_CACHE=false
+      - SPRING_THYMELEAF_MODE=HTML
+      - SPRING_THYMELEAF_ENCODING=UTF-8
+      
+      # Logging Configuration
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=INFO
+      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=INFO
+      - LOGGING_LEVEL_ORG_HIBERNATE_SQL=WARN
+      
+      # Server Configuration
+      - SERVER_ERROR_INCLUDE_STACKTRACE=never
+      - SERVER_ERROR_INCLUDE_MESSAGE=always
+      - SERVER_COMPRESSION_ENABLED=true
       
       # Actuator Configuration
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics
       - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=when_authorized
       
-      # Application Configuration
-      - SERVER_PORT=8080
-      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=INFO
+      # NewsAPI Configuration
+      - NEWSAPI_API_KEY=e38422f6dd594bf5986fae6d858a1d3c
+      - NEWSAPI_BASE_URL=https://newsapi.org/v2
+      - NEWSAPI_PAGE_SIZE=20
+      - NEWSAPI_LANGUAGE=en
+      - NEWSAPI_COUNTRY=us
       
-      # News API Configuration (add your API key here)
-      # - NEWS_API_KEY=your_news_api_key_here
+      # Security Configuration
+      - SPRING_SECURITY_CSRF_ENABLED=false
+      - SPRING_SECURITY_HEADERS_FRAME_OPTIONS=SAMEORIGIN
+      - SPRING_SECURITY_USER_NAME=admin
+      - SPRING_SECURITY_USER_PASSWORD={noop}admin123
+      - SPRING_SECURITY_USER_ROLES=ADMIN
       
     volumes:
       # Optional: Mount logs directory

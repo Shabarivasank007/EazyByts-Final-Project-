@@ -1,5 +1,5 @@
 # Multi-stage build for News Platform
-FROM openjdk:17-jdk-slim as build
+FROM eclipse-temurin:17-jdk-alpine as build
 
 # Set working directory
 WORKDIR /app
@@ -21,13 +21,13 @@ COPY demo/src ./src
 RUN ./mvnw clean package -DskipTests
 
 # Production stage
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 
 # Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
-# Create app user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Create app user for security (Alpine Linux syntax)
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 # Set working directory
 WORKDIR /app

@@ -35,12 +35,8 @@ services:
       - SPRING_H2_CONSOLE_PATH=/h2-console
       - SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=false
       
-      # Connection Pool
-      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=5
-      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=20
-      - SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT=300000
-      - SPRING_DATASOURCE_HIKARI_MAX_LIFETIME=1200000
-      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=20000
+      # Connection Pool - Let application.properties handle Hikari configuration
+      # Removed all Hikari environment variables to avoid configuration conflicts
       
       # Cache Configuration
       - SPRING_CACHE_TYPE=caffeine

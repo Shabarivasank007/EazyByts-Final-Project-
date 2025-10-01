@@ -30,10 +30,8 @@ services:
       - SPRING_SQL_INIT_PLATFORM=h2
       - SPRING_SQL_INIT_CONTINUE_ON_ERROR=true
       
-      # H2 Console
-      - SPRING_H2_CONSOLE_ENABLED=true
-      - SPRING_H2_CONSOLE_PATH=/h2-console
-      - SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=false
+      # H2 Console - Disabled to avoid conflicts with application.properties
+      - SPRING_H2_CONSOLE_ENABLED=false
       
       # Connection Pool - Let application.properties handle Hikari configuration
       # Removed all Hikari environment variables to avoid configuration conflicts

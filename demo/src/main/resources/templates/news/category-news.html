@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${#strings.capitalize(currentCategory)} + ' News'">Category News</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --card-hover-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .category-header {
+            background: var(--primary-gradient);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="rgba(255,255,255,0.15)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+            opacity: 0.6;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .category-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .category-title {
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            color: #667eea;
+        }
+
+        .stats-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .stat-content h4 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .news-card {
+            border: none;
+            border-radius: 16px;
+            transition: var(--transition-smooth);
+            background: white;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .news-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 220px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .news-card:hover .news-image {
+            transform: scale(1.1) rotate(1deg);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #667eea;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+
+        .news-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover .news-overlay {
+            transform: translateY(0);
+        }
+
+        .news-overlay-text {
+            color: white;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-content h5 {
+            font-weight: 700;
+            color: #1a202c;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .news-meta i {
+            color: #667eea;
+        }
+
+        .news-description {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            font-size: 0.95rem;
+        }
+
+        .btn-read-more {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-read-more:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-read-more:disabled,
+        .btn-read-more.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert-modern {
+            border: none;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            animation: slideIn 0.4s ease;
+        }
+
+        .alert-modern i {
+            font-size: 1.5rem;
+            margin-top: 0.2rem;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .empty-state-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h4 {
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            color: #718096;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .category-title {
+                font-size: 1.8rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .category-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="category-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="category-title-wrapper">
+                    <div class="category-icon">
+                            <span th:switch="${currentCategory}">
+                                <span th:case="'business'">📊</span>
+                                <span th:case="'technology'">💻</span>
+                                <span th:case="'science'">🔬</span>
+                                <span th:case="'health'">🏥</span>
+                                <span th:case="'sports'">⚽</span>
+                                <span th:case="'entertainment'">🎬</span>
+                                <span th:case="*">📰</span>
+                            </span>
+                    </div>
+                    <h2 class="category-title" th:text="${#strings.capitalize(currentCategory)} + ' News'">Category News</h2>
+                </div>
+                <a href="/news/live" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to All News
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar" th:if="${categoryNews != null && categoryNews.articles != null && !categoryNews.articles.empty}">
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <div class="stat-content">
+                    <h4 th:text="${categoryNews.articles.size()}">0</h4>
+                    <p>Articles Found</p>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Latest</h4>
+                    <p>Updated Today</p>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="stat-content">
+                    <h4 th:text="${#strings.capitalize(currentCategory)}">Category</h4>
+                    <p>Category</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="news-grid" th:if="${categoryNews != null && categoryNews.articles != null && !categoryNews.articles.empty}">
+            <div th:each="article : ${categoryNews.articles}">
+                <div class="news-card">
+                    <div class="news-image-wrapper">
+                        <span class="category-badge" th:text="${article.source != null && article.source.name != null ? article.source.name : 'News'}">Source</span>
+                        <img th:src="${article.urlToImage != null && !#strings.isEmpty(article.urlToImage) ? article.urlToImage : 'https://via.placeholder.com/400x220/667eea/ffffff?text=No+Image'}"
+                             class="news-image"
+                             alt="News Image"
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=No+Image'">
+                        <div class="news-overlay">
+                            <p class="news-overlay-text">Click to read the full story</p>
+                        </div>
+                    </div>
+                    <div class="news-content">
+                        <h5 th:text="${article.title ?: 'No Title Available'}">News Title</h5>
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <i class="far fa-calendar"></i>
+                                <span th:text="${article.publishedAt != null ? #strings.substring(article.publishedAt, 0, 10) : 'Unknown Date'}">Date</span>
+                            </div>
+                        </div>
+                        <p class="news-description" th:text="${article.description != null ? #strings.abbreviate(article.description, 140) : 'No description available for this article.'}">Description</p>
+                        <a th:href="${article.url ?: '#'}"
+                           th:target="${article.url != null ? '_blank' : '_self'}"
+                           class="btn-read-more"
+                           th:classappend="${article.url == null ? ' disabled' : ''}">
+                            Read Full Story
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-modern alert-warning" th:if="${isFromDatabase}">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Database Mode:</strong> Showing latest news from our database. External news sources for this category are temporarily unavailable.
+            </div>
+        </div>
+
+        <div class="alert-modern alert-danger" th:if="${errorMessage != null}">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div th:text="${errorMessage}">Error message</div>
+        </div>
+
+        <div class="empty-state" th:if="${categoryNews == null || categoryNews.articles == null || categoryNews.articles.empty}">
+            <div class="empty-state-icon">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <h4>No Articles Available</h4>
+            <p>No news articles available for this category at the moment. Please try again later or
+                <a href="/news/live" class="alert-link" style="font-weight: 600; color: #667eea;">browse all news</a>.</p>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Staggered animation for news cards
+        const cards = document.querySelectorAll('.news-card');
+        cards.forEach((card, index) => {
+            card.style.animation = `fadeInUp 0.5s ease ${index * 0.08}s both`;
+        });
+
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

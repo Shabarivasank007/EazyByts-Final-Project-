@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Search Results</title>
+    <style>
+        .search-header {
+            background: var(--bg-color);
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .news-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            background: var(--bg-color);
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        .news-content {
+            padding: 15px;
+        }
+        .news-meta {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .search-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="search-header">
+            <div class="container">
+                <form action="/news/search" method="GET" class="search-form">
+                    <div class="input-group">
+                        <input type="text" name="query" class="form-control"
+                               th:value="${searchQuery}"
+                               placeholder="Search for news...">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="container">
+            <h3 class="mb-4" th:if="${searchQuery}">
+                Search Results for "<span th:text="${searchQuery}"></span>"
+            </h3>
+
+            <div class="row" th:if="${searchResults != null && searchResults.articles != null}">
+                <div class="col-md-4 mb-4" th:each="article : ${searchResults.articles}">
+                    <div class="news-card">
+                        <img th:src="${article.urlToImage}"
+                             th:onerror="'this.src=\'/images/placeholder/news-default.jpg\''"
+                             class="news-image" alt="News Image">
+                        <div class="news-content">
+                            <h5 class="card-title" th:text="${article.title}">News Title</h5>
+                            <p class="news-meta">
+                                <span th:text="${article.source.name}">Source</span> •
+                                <span th:text="${#dates.format(#dates.parse(article.publishedAt), 'dd MMM yyyy')}">Date</span>
+                            </p>
+                            <p class="card-text" th:text="${article.description}">Description</p>
+                            <a th:href="${article.url}" target="_blank" class="btn btn-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info" th:if="${searchResults == null || searchResults.articles == null || searchResults.articles.empty}">
+                No results found for your search. Please try different keywords.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

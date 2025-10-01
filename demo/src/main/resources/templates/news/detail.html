@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${news != null && news.title != null ? news.title + ' - NewsPlatform' : 'NewsPlatform'}">News Title - NewsPlatform</title>
+    <meta name="description" th:content="${news != null && news.summary != null ? (news.summary.length() > 155 ? news.summary.substring(0, 155) + '...' : news.summary) : 'Latest news and updates.'}">
+    <meta property="og:title" th:content="${news != null && news.title != null ? news.title : 'NewsPlatform'}">
+    <meta property="og:description" th:content="${news != null && news.summary != null ? (news.summary.length() > 200 ? news.summary.substring(0, 200) + '...' : news.summary) : 'Latest news and updates.'}">
+    <meta property="og:image" th:content="${news != null && news.imageUrl != null ? news.imageUrl : '/images/placeholder/news-default.jpg'}">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item">
+                        <a th:if="${news != null && news.category != null}" th:href="@{/category/{slug}(slug=${news.category.slug})}"
+                           th:text="${news.category.name}">Category</a>
+                        <span th:if="${news == null || news.category == null}" class="text-muted">Category</span>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${news != null && news.title != null ? (news.title.length() > 50 ? news.title.substring(0, 50) + '...' : news.title) : 'News Title'}">News Title</li>
+                </ol>
+            </nav>
+
+            <article class="news-article">
+                <header class="mb-4">
+                    <h1 class="article-title" th:text="${news != null && news.title != null ? news.title : 'News Title'}">News Title</h1>
+                    <div class="article-meta d-flex flex-wrap align-items-center mb-3">
+                        <div class="author-avatar me-3">
+                            <img th:if="${news != null && news.author != null && news.author.imageUrl != null}"
+                                 th:src="${news.author.imageUrl}"
+                                 class="rounded-circle"
+                                 width="40"
+                                 height="40"
+                                 alt="Author">
+                            <div th:unless="${news != null && news.author != null && news.author.imageUrl != null}"
+                                 class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 40px; height: 40px; background-color: #ddd;">
+                                <i class="fas fa-user text-muted"></i>
+                            </div>
+                        </div>
+                        <div class="meta-info">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <span class="author-name fw-bold me-2"
+                                      th:text="${news != null && news.author != null && news.author.name != null ? news.author.name : 'Staff Reporter'}">Author</span>
+                                <span class="publish-date text-muted"
+                                      th:if="${news != null && news.publishedAt != null}"
+                                      th:title="${news.publishedAt}"
+                                      th:text="${news.publishedAt}">
+                                    Date
+                                </span>
+                                <span class="publish-date text-muted" th:if="${news == null || news.publishedAt == null}">Date Unknown</span>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center small text-muted">
+                                <span class="me-3">
+                                    <i class="far fa-eye me-1"></i>
+                                    <span th:text="${news != null && news.viewCount != null ? news.viewCount : '0'}">0</span> views
+                                </span>
+                                <span class="me-3">
+                                    <i class="far fa-comment me-1"></i>
+                                    <span th:text="${news != null && news.commentCount != null ? news.commentCount : '0'}">0</span> comments
+                                </span>
+                                <span class="me-3">
+                                    <i class="far fa-clock me-1"></i>
+                                    <span th:text="${news != null && news.readingTime != null ? news.readingTime + ' min read' : '5 min read'}">5 min read</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="ms-auto">
+                            <div class="share-buttons">
+                                <a href="#" class="btn btn-sm btn-outline-secondary me-1" title="Share on Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-secondary me-1" title="Share on Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-secondary me-1" title="Share on LinkedIn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-secondary" title="Copy link">
+                                    <i class="fas fa-link"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <figure class="article-featured-image mb-4">
+                        <img th:if="${news != null && news.imageUrl != null}" th:src="${news.imageUrl}"
+                             class="img-fluid rounded"
+                             th:alt="${news != null && news.imageAlt != null ? news.imageAlt : (news != null && news.title != null ? news.title : 'No image available')}">
+                        <img th:unless="${news != null && news.imageUrl != null}" src="/images/placeholder/news-default.jpg" class="img-fluid rounded" alt="No image available">
+                        <figcaption class="figure-caption text-center mt-2 text-muted"
+                                   th:if="${news != null && news.imageCaption != null}"
+                                   th:text="${news.imageCaption}">
+                            Image caption goes here
+                        </figcaption>
+                    </figure>
+                </header>
+                <div class="article-content mb-5">
+                    <div class="lead mb-4" th:text="${news != null && news.summary != null ? news.summary : 'No summary available.'}">
+                        News summary or lead paragraph goes here...
+                    </div>
+                    <div class="article-body" th:utext="${news != null && news.content != null ? news.content : '<p>No content available.</p>'}">
+                        <p>News content goes here...</p>
+                    </div>
+                    <!-- Tags -->
+                    <div class="article-tags mt-4 pt-3 border-top">
+                        <h6 class="d-inline me-2">Tags:</h6>
+                        <div th:if="${news != null && news.tags != null && !news.tags.empty}" class="d-inline">
+                            <a th:each="tag : ${news.tags}"
+                               th:href="@{/tag/{slug}(slug=${tag.slug ?: 'unknown'})}"
+                               class="badge bg-light text-dark text-decoration-none me-2 mb-2"
+                               th:text="'#' + ${tag.name ?: 'tag'}">
+                                #tag
+                            </a>
+                        </div>
+                        <span th:if="${news == null || news.tags == null || news.tags.empty}" class="text-muted">No tags</span>
+                    </div>
+                    <!-- Source and Attribution -->
+                    <div class="source-info mt-4 p-3 bg-light rounded" th:if="${news != null && news.source != null}">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="fas fa-newspaper fa-2x text-muted"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Source</h6>
+                                <p class="mb-0">
+                                    <span th:if="${news != null && news.sourceUrl != null}">
+                                        <a th:href="${news.sourceUrl}" target="_blank" rel="nofollow"
+                                           th:text="${news.source != null ? news.source.name : 'Unknown Source'}">Source Name</a>
+                                    </span>
+                                    <span th:unless="${news != null && news.sourceUrl != null}" th:text="${news.source != null ? news.source.name : 'Unknown Source'}">Source Name</span>
+                                    <span th:if="${news != null && news.publishedAt != null}" class="text-muted small ms-2">
+                                        (Published: <span th:text="${news.publishedAt}">date</span>)
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Author Bio -->
+                <div class="author-bio p-4 mb-5 bg-light rounded" th:if="${news != null && news.author != null}">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img th:if="${news.author != null && news.author.imageUrl != null}" 
+                                 th:src="${news.author.imageUrl}" 
+                                 class="rounded-circle" 
+                                 width="80" 
+                                 height="80" 
+                                 alt="Author">
+                            <div th:unless="${news.author != null && news.author.imageUrl != null}" 
+                                 class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 80px; height: 80px; background-color: #ddd;">
+                                <i class="fas fa-user fa-2x text-muted"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h5 class="mb-1" th:text="${news.author != null && news.author.name != null ? news.author.name : 'Author Name'}">Author Name</h5>
+                            <p class="text-muted mb-2" th:if="${news.author != null && news.author.title != null}" th:text="${news.author.title}">Author Title</p>
+                            <p class="mb-2" th:if="${news.author != null && news.author.bio != null}" th:text="${news.author.bio}">
+                                Author bio goes here. This is a short description about the author.
+                            </p>
+                            <div class="author-social">
+                                <a th:if="${news.author != null && news.author.twitterUrl != null}" 
+                                   th:href="${news.author.twitterUrl}" 
+                                   class="text-muted me-2" 
+                                   target="_blank"
+                                   title="Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a th:if="${news.author != null && news.author.linkedinUrl != null}" 
+                                   th:href="${news.author.linkedinUrl}" 
+                                   class="text-muted me-2" 
+                                   target="_blank"
+                                   title="LinkedIn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a th:if="${news.author != null && news.author.websiteUrl != null}" 
+                                   th:href="${news.author.websiteUrl}" 
+                                   class="text-muted" 
+                                   target="_blank"
+                                   title="Website">
+                                    <i class="fas fa-globe"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Related Articles -->
+                <div class="related-articles mb-5">
+                    <h4 class="mb-4">Related Articles</h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-4" th:each="relatedNews : ${relatedNews}">
+                            <div class="card h-100">
+                                <a th:if="${relatedNews != null && relatedNews.id != null}" th:href="@{/news/{id}(id=${relatedNews.id})}">
+                                    <img th:if="${relatedNews.imageUrl != null}" th:src="${relatedNews.imageUrl}" class="card-img-top" alt="Related News">
+                                    <img th:unless="${relatedNews.imageUrl != null}" src="/images/placeholder/news-default.jpg" class="card-img-top" alt="Related News">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a th:if="${relatedNews != null && relatedNews.id != null}" th:href="@{/news/{id}(id=${relatedNews.id})}" th:text="${relatedNews.title != null ? relatedNews.title : 'Related News Title'}">
+                                            Related News Title
+                                        </a>
+                                        <span th:unless="${relatedNews != null && relatedNews.id != null}" class="text-muted">Related News Title</span>
+                                    </h5>
+                                    <p class="card-text small text-muted" th:if="${relatedNews != null && relatedNews.publishedAt != null}" th:text="${relatedNews.publishedAt}">
+                                        Date
+                                    </p>
+                                    <p class="card-text small text-muted" th:unless="${relatedNews != null && relatedNews.publishedAt != null}">Date Unknown</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Comments Section -->
+                <div class="comments-section mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Comments <span class="badge bg-secondary" th:text="${news != null && news.commentCount != null ? news.commentCount : '0'}">0</span></h4>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#addCommentForm">
+                            <i class="far fa-comment me-1"></i> Add Comment
+                        </button>
+                    </div>
+                    <!-- Add Comment Form -->
+                    <div class="collapse mb-4" id="addCommentForm">
+                        <div class="card card-body">
+                            <h5>Leave a Comment</h5>
+                            <form id="commentForm" th:action="@{/news/{id}/comment(id=${news != null && news.id != null ? news.id : 0})}" method="post">
+                                <div class="mb-3">
+                                    <label for="commentName" class="form-label">Name *</label>
+                                    <input type="text" class="form-control" id="commentName" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="commentEmail" class="form-label">Email (will not be published) *</label>
+                                    <input type="email" class="form-control" id="commentEmail" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="commentContent" class="form-label">Comment *</label>
+                                    <textarea class="form-control" id="commentContent" name="content" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Comments List -->
+                    <div class="comments-list" th:if="${news != null && news.comments != null && !news.comments.empty}">
+                        <div class="comment mb-4" th:each="comment : ${news.comments}">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 50px; height: 50px; background-color: #e9ecef;">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="mb-0 fw-bold" th:text="${comment.authorName != null ? comment.authorName : 'Commenter Name'}">Commenter Name</h6>
+                                        <small class="text-muted"
+                                               th:if="${comment.createdAt != null}"
+                                               th:title="${comment.createdAt}"
+                                               th:text="${comment.createdAt}">
+                                            Date
+                                        </small>
+                                        <small class="text-muted" th:unless="${comment.createdAt != null}">Date Unknown</small>
+                                    </div>
+                                    <div class="comment-text" th:text="${comment.content != null ? comment.content : 'Comment content goes here...'}">
+                                        Comment content goes here...
+                                    </div>
+                                    <div class="comment-actions mt-2">
+                                        <a href="#" class="text-muted small me-3">
+                                            <i class="far fa-thumbs-up me-1"></i> Like
+                                        </a>
+                                        <a href="#" class="text-muted small me-3">
+                                            <i class="far fa-comment me-1"></i> Reply
+                                        </a>
+                                        <a href="#" class="text-muted small">
+                                            <i class="fas fa-flag me-1"></i> Report
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" th:if="${news == null || news.comments == null || news.comments.empty}">
+                        No comments yet. Be the first to comment!
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+    <!-- Newsletter Subscription -->
+    <div class="container mb-5">
+        <div class="card bg-light border-0 rounded-3 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <h4 class="mb-2">Stay Updated</h4>
+                        <p class="mb-0 text-muted">Subscribe to our newsletter for the latest news and updates.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <form class="row g-2">
+                            <div class="col-md-8">
+                                <input type="email" class="form-control" placeholder="Your email address" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

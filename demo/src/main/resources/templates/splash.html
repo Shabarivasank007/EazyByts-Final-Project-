@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to News Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .splash-container {
+            text-align: center;
+            color: white;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            animation: bounceIn 2s ease-out;
+        }
+
+        .logo-icon {
+            font-size: 5rem;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .welcome-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: slideInLeft 1.5s ease-out 0.5s both;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            animation: slideInRight 1.5s ease-out 1s both;
+        }
+
+        .loading-container {
+            margin-top: 2rem;
+            animation: fadeIn 2s ease-out 1.5s both;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            animation: fadeInOut 2s ease-in-out infinite;
+        }
+
+        .news-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            font-size: 2rem;
+            animation-delay: 0s;
+        }
+
+        .floating-icon:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            font-size: 1.5rem;
+            animation-delay: 1s;
+        }
+
+        .floating-icon:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            font-size: 2.5rem;
+            animation-delay: 2s;
+        }
+
+        .floating-icon:nth-child(4) {
+            bottom: 20%;
+            right: 10%;
+            font-size: 1.8rem;
+            animation-delay: 3s;
+        }
+
+        .floating-icon:nth-child(5) {
+            top: 50%;
+            left: 5%;
+            font-size: 1.2rem;
+            animation-delay: 4s;
+        }
+
+        .floating-icon:nth-child(6) {
+            top: 60%;
+            right: 5%;
+            font-size: 2rem;
+            animation-delay: 5s;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-20px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(-10px) rotate(240deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            .logo-icon {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-text {
+                font-size: 2rem;
+            }
+            .subtitle {
+                font-size: 1rem;
+            }
+            .logo-icon {
+                font-size: 3rem;
+            }
+        }
+
+        /* Auto-redirect after 4 seconds */
+        .splash-container {
+            animation: fadeInUp 1.5s ease-out, fadeOut 1s ease-in 3s both;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating News Icons Background -->
+    <div class="news-icons">
+        <i class="fas fa-newspaper floating-icon"></i>
+        <i class="fas fa-rss floating-icon"></i>
+        <i class="fas fa-globe floating-icon"></i>
+        <i class="fas fa-broadcast-tower floating-icon"></i>
+        <i class="fas fa-microphone floating-icon"></i>
+        <i class="fas fa-video floating-icon"></i>
+    </div>
+
+    <!-- Main Splash Content -->
+    <div class="splash-container">
+        <div class="logo-container">
+            <i class="fas fa-newspaper logo-icon"></i>
+        </div>
+        
+        <h1 class="welcome-text">Welcome to News Hub</h1>
+        <p class="subtitle">Your Gateway to the Latest News & Updates</p>
+        
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading your personalized news experience...</p>
+        </div>
+    </div>
+
+    <!-- Auto-redirect Script -->
+    <script>
+        // Auto-redirect to home page after 4 seconds
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 4000);
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click to skip functionality
+            document.body.addEventListener('click', function() {
+                window.location.href = '/';
+            });
+
+            // Add keyboard skip functionality
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    window.location.href = '/';
+                }
+            });
+
+            // Update loading text dynamically
+            const loadingTexts = [
+                'Loading your personalized news experience...',
+                'Fetching the latest headlines...',
+                'Preparing your news dashboard...',
+                'Almost ready...'
+            ];
+            
+            let textIndex = 0;
+            const loadingTextElement = document.querySelector('.loading-text');
+            
+            setInterval(function() {
+                textIndex = (textIndex + 1) % loadingTexts.length;
+                loadingTextElement.textContent = loadingTexts[textIndex];
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

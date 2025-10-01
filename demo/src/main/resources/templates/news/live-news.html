@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Live News - Latest Updates</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --card-hover-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page-header {
+            background: var(--primary-gradient);
+            padding: 3rem 0 4rem;
+            margin-bottom: -2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header h2 {
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-header .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            z-index: 2;
+        }
+
+        .category-filter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .category-filter label {
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .category-filter select {
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            background: white;
+        }
+
+        .category-filter select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .news-card {
+            border: none;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            transition: var(--transition-smooth);
+            background: white;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .news-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 220px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .news-card:hover .news-image {
+            transform: scale(1.08);
+        }
+
+        .news-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #667eea;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .news-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-content h5 {
+            font-weight: 700;
+            color: #1a202c;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .news-meta i {
+            color: #667eea;
+        }
+
+        .news-description {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .btn-read-more {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-read-more:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-read-more:disabled,
+        .btn-read-more.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert-modern {
+            border: none;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            animation: slideIn 0.4s ease;
+        }
+
+        .alert-modern i {
+            font-size: 1.5rem;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e0;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h4 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #718096;
+        }
+
+        .loading-skeleton {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h2 {
+                font-size: 2rem;
+            }
+
+            .category-filter {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .news-image-wrapper {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="page-header">
+        <div class="container">
+            <h2><i class="fas fa-newspaper me-2"></i>Live News Updates</h2>
+            <p class="subtitle">Stay informed with the latest stories from around the world</p>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="filter-section">
+            <div class="category-filter">
+                <label for="categorySelect">
+                    <i class="fas fa-filter me-2"></i>Filter by Category:
+                </label>
+                <select class="form-select" id="categorySelect" onchange="loadCategory(this.value)">
+                    <option value="">All Categories</option>
+                    <option value="business">📊 Business</option>
+                    <option value="technology">💻 Technology</option>
+                    <option value="science">🔬 Science</option>
+                    <option value="health">🏥 Health</option>
+                    <option value="sports">⚽ Sports</option>
+                    <option value="entertainment">🎬 Entertainment</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row" th:if="${topNews != null && topNews.articles != null && !topNews.articles.empty}">
+            <div class="col-lg-4 col-md-6 mb-4" th:each="article : ${topNews.articles}">
+                <div class="news-card">
+                    <div class="news-image-wrapper">
+                        <span class="news-badge" th:text="${article.source != null && article.source.name != null ? article.source.name : 'News'}">Source</span>
+                        <img th:src="${article.urlToImage != null && !#strings.isEmpty(article.urlToImage) ? article.urlToImage : 'https://via.placeholder.com/400x220/667eea/ffffff?text=No+Image'}"
+                             class="news-image"
+                             alt="News Image"
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=No+Image'">
+                    </div>
+                    <div class="news-content">
+                        <h5 th:text="${article.title ?: 'No Title Available'}">News Title</h5>
+                        <div class="news-meta">
+                                <span>
+                                    <i class="far fa-calendar me-1"></i>
+                                    <span th:text="${article.publishedAt != null ? #strings.substring(article.publishedAt, 0, 10) : 'Unknown Date'}">Date</span>
+                                </span>
+                        </div>
+                        <p class="news-description" th:text="${article.description != null ? #strings.abbreviate(article.description, 140) : 'No description available for this article.'}">Description</p>
+                        <a th:href="${article.url ?: '#'}"
+                           th:target="${article.url != null ? '_blank' : '_self'}"
+                           class="btn-read-more"
+                           th:classappend="${article.url == null ? ' disabled' : ''}">
+                            Read Full Story <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-modern alert-warning" th:if="${isFromDatabase}">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Database Mode:</strong> Showing latest news from our database. Live news from external sources is temporarily unavailable.
+            </div>
+        </div>
+
+        <div class="alert-modern alert-danger" th:if="${errorMessage != null}">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div th:text="${errorMessage}">Error message</div>
+        </div>
+
+        <div class="alert-modern alert-info" th:if="${topNews == null || topNews.articles == null || topNews.articles.empty}">
+            <div class="empty-state w-100">
+                <i class="fas fa-newspaper"></i>
+                <h4>No News Available</h4>
+                <p>No news articles available at the moment. Please try again later or
+                    <a href="/news/refresh" class="alert-link" style="font-weight: 600;">refresh the news feed</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function loadCategory(category) {
+        const select = document.getElementById('categorySelect');
+        select.style.opacity = '0.6';
+
+        if (category) {
+            window.location.href = '/news/category?category=' + category;
+        } else {
+            window.location.href = '/news/live';
+        }
+    }
+
+    // Add smooth scroll behavior
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.news-card');
+        cards.forEach((card, index) => {
+            card.style.animation = `slideIn 0.4s ease ${index * 0.05}s both`;
+        });
+    });
+</script>
+</body>
+</html>

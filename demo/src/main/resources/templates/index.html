@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Latest News - Best News Platform</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+<!-- Include Navbar/Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Hero Slideshow -->
+<div class="fullscreen-slideshow">
+    <!-- Slide 1 -->
+    <div class="slide active" style="background-image: linear-gradient(135deg, rgba(99, 102, 241, 0.7), rgba(168, 85, 247, 0.7)), url('https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
+        <div class="slide-content">
+            <div class="slide-badge">Breaking News</div>
+            <h1 class="slide-title-enhanced">Stay Updated with the Latest News</h1>
+            <p class="slide-description-enhanced">Get real-time updates on global events, technology, business, and more. Your trusted source for accurate and timely information.</p>
+            <div class="slide-actions">
+                <a href="#latest-news" class="slide-btn slide-btn-primary">Explore News</a>
+                <a href="/news/live" class="slide-btn slide-btn-outline">Live News</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" style="background-image: linear-gradient(135deg, rgba(236, 72, 153, 0.7), rgba(239, 68, 68, 0.7)), url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
+        <div class="slide-content">
+            <div class="slide-badge">In-Depth</div>
+            <h1 class="slide-title-enhanced">Expert Analysis & Insights</h1>
+            <p class="slide-description-enhanced">Go beyond the headlines with our comprehensive analysis and expert opinions on today's most important stories.</p>
+            <div class="slide-actions">
+                <a href="#featured-news" class="slide-btn slide-btn-primary">View Featured</a>
+                <a href="#latest-news" class="slide-btn slide-btn-outline">Latest News</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <button onclick="prevSlide()" class="slide-nav-btn slide-nav-prev">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button onclick="nextSlide()" class="slide-nav-btn slide-nav-next">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Navigation Dots -->
+    <div class="dots-container">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+    </div>
+</div>
+
+<!-- Stats Bar -->
+<section class="stats-bar">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">5,000+</h3>
+                        <p class="stat-label">Articles</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">2M+</h3>
+                        <p class="stat-label">Readers</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">50+</h3>
+                        <p class="stat-label">Countries</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">4.9</h3>
+                        <p class="stat-label">Rating</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<main>
+    <!-- Featured News Section -->
+    <section id="featured-news" class="featured-news-section py-5" th:if="${featuredNews != null and !featuredNews.empty}">
+        <div class="container">
+            <div class="section-header text-center mb-5" data-aos="fade-up">
+                <span class="section-label">Editor's Choice</span>
+                <h2 class="section-title-modern">Featured Stories</h2>
+                <p class="section-subtitle">Hand-picked stories that matter most</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="news, iterStat : ${featuredNews}">
+                    <article class="news-card-modern" data-aos="fade-up" th:attr="data-aos-delay=${100 + iterStat.index * 100}">
+                        <div class="card-image-wrapper">
+                            <img th:src="${news.imageUrl ?: (iterStat.index == 0 ? 'https://tse1.mm.bing.net/th/id/OIP.pAOWbhHNyNfDnKY-Ex2kWAHaD4?pid=Api&P=0&h=180' : (iterStat.index == 1 ? 'https://tse3.mm.bing.net/th/id/OIP.VOiHyvw1Oeyy64XG74OgoAHaEK?pid=Api&P=0&h=180' : 'https://tse1.mm.bing.net/th/id/OIP.pMGNXRBVRoDa0KMsA6GCbgHaE7?pid=Api&P=0&h=180'))}"
+                                 th:alt="${news.title}" loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/400x300/6B7280/FFFFFF?text=News+Image'">
+                            <div class="card-overlay-gradient"></div>
+                            <span class="card-badge badge-featured">
+                                    <i class="fas fa-fire"></i> Featured
+                                </span>
+                            <div class="card-hover-actions">
+                                <button class="action-btn" th:attr="data-url=@{/news/{id}(id=${news.id})}, data-title=${news.title}">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="action-btn">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content-modern">
+                            <div class="card-meta-modern">
+                                <span class="category-pill" th:text="${news.category.name}">Category</span>
+                                <span class="meta-divider">•</span>
+                                <span class="meta-time">
+                                        <i class="far fa-clock"></i>
+                                        <span th:text="${#temporals.format(news.publishedAt, 'MMM dd')}">Date</span>
+                                    </span>
+                            </div>
+                            <h3 class="card-title-modern">
+                                <a th:href="@{/news/{id}(id=${news.id})}" th:text="${news.title}">News Title</a>
+                            </h3>
+                            <p class="card-excerpt" th:text="${#strings.abbreviate(news.description, 120)}">News description...</p>
+                            <div class="card-footer-modern">
+                                <div class="card-stats">
+                                        <span class="stat">
+                                            <i class="far fa-eye"></i>
+                                            <span th:text="${news.viewCount}">0</span>
+                                        </span>
+                                    <span class="stat">
+                                            <i class="far fa-heart"></i>
+                                            <span>245</span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest News Section -->
+    <section id="latest-news" class="latest-news-section py-5 bg-light-modern">
+        <div class="container">
+            <div class="section-header text-center mb-5" data-aos="fade-up">
+                <span class="section-label">Stay Informed</span>
+                <h2 class="section-title-modern">Latest Updates</h2>
+                <p class="section-subtitle">Fresh news from around the world</p>
+            </div>
+
+            <div class="row g-4" th:if="${latestNews != null and latestNews.hasContent()}">
+                <div class="col-lg-3 col-md-6" th:each="news, iterStat : ${latestNews.content}">
+                    <article class="news-card-compact" data-aos="fade-up" th:attr="data-aos-delay=${100 + iterStat.index * 50}">
+                        <div class="compact-image-wrapper">
+                            <img th:src="${news.imageUrl ?: 'https://via.placeholder.com/300x200/6366F1/FFFFFF?text=Latest+News'}"
+                                 th:alt="${news.title}" loading="lazy">
+                            <div class="image-overlay"></div>
+                            <span class="compact-category" th:text="${news.category.name}">Category</span>
+                        </div>
+                        <div class="compact-content">
+                            <div class="compact-meta">
+                                    <span class="meta-date">
+                                        <i class="far fa-calendar"></i>
+                                        <span th:text="${#temporals.format(news.publishedAt, 'MMM dd')}">Date</span>
+                                    </span>
+                                <span class="meta-views">
+                                        <i class="far fa-eye"></i>
+                                        <span th:text="${news.viewCount}">0</span>
+                                    </span>
+                            </div>
+                            <h4 class="compact-title">
+                                <a th:href="@{/news/{id}(id=${news.id})}" th:text="${news.title}">News Title</a>
+                            </h4>
+                            <p class="compact-excerpt" th:text="${#strings.abbreviate(news.description ?: '', 80)}">Short description...</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-5" th:if="${latestNews != null and latestNews.totalPages > 1}">
+                <ul class="pagination-modern justify-content-center">
+                    <li class="page-item-modern" th:classappend="${!latestNews.hasPrevious()} ? 'disabled'">
+                        <a class="page-link-modern" th:href="@{/(page=${currentPage - 1})}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    <li class="page-item-modern" th:each="i : ${#numbers.sequence(0, latestNews.totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link-modern" th:href="@{/(page=${i})}" th:text="${i + 1}">1</a>
+                    </li>
+
+                    <li class="page-item-modern" th:classappend="${!latestNews.hasNext()} ? 'disabled'">
+                        <a class="page-link-modern" th:href="@{/(page=${currentPage + 1})}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</main>
+
+<!-- Include Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script th:src="@{/js/main.js}"></script>
+
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-out-cubic',
+        once: true,
+        mirror: false
+    });
+</script>
+<script th:src="@{/js/slideshow.js}"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- Header Fragment -->
+<div th:fragment="header">
+    <!-- Header Navigation -->
+    <header class="header-section sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #d32f2f;">
+            <div class="container">
+                <a class="navbar-brand fw-bold fs-3" href="/">
+                    <i class="fas fa-newspaper text-warning me-2"></i>
+                    NewsHub
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a th:href="@{/}" th:class="'nav-link' + (${activePage == 'home'} ? ' active' : '')">
+                                <i class="fas fa-home me-1"></i>Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a th:href="@{/news/live}" th:class="'nav-link' + (${activePage == 'live-news'} ? ' active' : '')">
+                                <i class="fas fa-satellite-dish me-1"></i>Live News
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-globe me-1"></i>News Categories
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" th:href="@{/news/category?category=business}"><i class="fas fa-briefcase me-2"></i>Business</a></li>
+                                <li><a class="dropdown-item" th:href="@{/news/category?category=technology}"><i class="fas fa-microchip me-2"></i>Technology</a></li>
+                                <li><a class="dropdown-item" th:href="@{/news/category?category=science}"><i class="fas fa-flask me-2"></i>Science</a></li>
+                                <li><a class="dropdown-item" th:href="@{/news/category?category=health}"><i class="fas fa-heartbeat me-2"></i>Health</a></li>
+                                <li><a class="dropdown-item" th:href="@{/news/category?category=sports}"><i class="fas fa-football-ball me-2"></i>Sports</a></li>
+                                <li><a class="dropdown-item" th:href="@{/news/category?category=entertainment}"><i class="fas fa-film me-2"></i>Entertainment</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown" th:if="${categories != null and !categories.empty}">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-list me-1"></i>Local Categories
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li th:each="category : ${categories}">
+                                    <a class="dropdown-item" th:href="@{/category/{slug}(slug=${category.slug})}">
+                                        <i class="fas fa-folder me-2"></i>
+                                        <span th:text="${category.name}">Category</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a th:href="@{/about}" th:class="'nav-link' + (${activePage == 'about'} ? ' active' : '')">
+                                <i class="fas fa-info-circle me-1"></i>About
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a th:href="@{/contact}" th:class="'nav-link' + (${activePage == 'contact'} ? ' active' : '')">
+                                <i class="fas fa-envelope me-1"></i>Contact
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Search Form -->
+                    <form class="d-flex" action="/search" method="GET">
+                        <input class="form-control me-2" type="search" name="q" placeholder="Search news..." aria-label="Search">
+                        <button class="btn btn-warning" type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+</div>
+
+</body>
+</html>

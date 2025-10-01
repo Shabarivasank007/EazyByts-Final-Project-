@@ -18,32 +18,8 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
-    <!-- Header -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">News Platform</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/categories">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/trending">Trending</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">About</a>
-                    </li>
-                    <!-- Theme toggle will be inserted here by JavaScript -->
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- Header using fragment -->
+    <div th:replace="~{fragments/header :: header}"></div>
 
     <!-- Main Content -->
     <main class="main-content">

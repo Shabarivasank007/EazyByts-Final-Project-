@@ -4,21 +4,20 @@ FROM eclipse-temurin:17-jdk-alpine as build
 # Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml from demo directory
-COPY demo/.mvn/ .mvn/
-COPY demo/mvnw demo/pom.xml ./
+# Install Maven first to avoid wrapper issues
+RUN apk add --no-cache maven
 
-# Make mvnw executable
-RUN chmod +x ./mvnw
+# Copy pom.xml first for dependency caching
+COPY demo/pom.xml ./
 
 # Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 # Copy source code from demo directory
 COPY demo/src ./src
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Production stage
 FROM eclipse-temurin:17-jre-alpine

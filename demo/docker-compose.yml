@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # News Platform Application
+  news-platform:
+    build: .
+    container_name: news-platform-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Database Configuration
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:newsdb
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      
+      # JPA Configuration
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=false
+      
+      # H2 Console (for development)
+      - SPRING_H2_CONSOLE_ENABLED=true
+      - SPRING_H2_CONSOLE_PATH=/h2-console
+      
+      # Cache Configuration
+      - SPRING_CACHE_TYPE=caffeine
+      - SPRING_CACHE_CAFFEINE_SPEC=maximumSize=1000,expireAfterWrite=1h
+      
+      # Actuator Configuration
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=when_authorized
+      
+      # Application Configuration
+      - SERVER_PORT=8080
+      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=INFO
+      
+      # News API Configuration (add your API key here)
+      # - NEWS_API_KEY=your_news_api_key_here
+      
+    volumes:
+      # Optional: Mount logs directory
+      - ./logs:/app/logs
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Optional: MySQL Database (uncomment if you want to use MySQL instead of H2)
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: news-platform-mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_DATABASE: newsplatform
+  #     MYSQL_USER: newsuser
+  #     MYSQL_PASSWORD: newspassword
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   restart: unless-stopped
+
+  # Optional: Redis for caching (uncomment if you want to use Redis)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: news-platform-redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+
+# Optional: Volumes for persistent data
+# volumes:
+#   mysql_data:
+
+networks:
+  default:
+    name: news-platform-network

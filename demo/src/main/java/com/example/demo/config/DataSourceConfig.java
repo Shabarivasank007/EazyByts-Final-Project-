@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Primary;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceConfig {
 
     @Bean
@@ -23,14 +22,14 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         HikariConfig config = new HikariConfig();
         
-        // Set basic connection properties
+        // Set connection properties manually to avoid any environment variable conflicts
         config.setJdbcUrl("jdbc:h2:mem:newsdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=false;CASE_INSENSITIVE_IDENTIFIERS=true");
         config.setUsername("sa");
         config.setPassword("");
         config.setDriverClassName("org.h2.Driver");
         
-        // Set Hikari pool properties explicitly to avoid environment variable conflicts
-        config.setPoolName("NewsHikariCP");
+        // Set Hikari properties with unique pool name to avoid conflicts
+        config.setPoolName("NewsPlatformHikariPool");
         config.setConnectionTimeout(20000);
         config.setMinimumIdle(5);
         config.setMaximumPoolSize(15);

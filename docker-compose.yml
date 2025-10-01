@@ -19,18 +19,11 @@ services:
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=
       
-      # JPA/Hibernate Configuration
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
-      - SPRING_JPA_SHOW_SQL=true
-      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
+      # JPA/Hibernate Configuration - Simplified to avoid conflicts
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=false
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
       - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
-      
-      # Hibernate Specific Properties
-      - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_TIME_ZONE=UTC
-      - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE=50
-      - SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_UPDATES=true
-      - SPRING_JPA_PROPERTIES_HIBERNATE_BATCH_VERSIONED_DATA=true
       
       # Database Initialization
       - SPRING_SQL_INIT_MODE=always
@@ -46,13 +39,8 @@ services:
       - SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=false
       - SPRING_H2_CONSOLE_SETTINGS_TRACE=false
       
-      # Connection Pool
-      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=5
-      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=20
-      - SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT=300000
-      - SPRING_DATASOURCE_HIKARI_POOL_NAME=NewsHikariCP
-      - SPRING_DATASOURCE_HIKARI_MAX_LIFETIME=1200000
-      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=20000
+      # Connection Pool - Let application.properties handle Hikari configuration
+      # Removed Hikari environment variables to avoid configuration conflicts
       
       # Cache Configuration
       - SPRING_CACHE_TYPE=caffeine
@@ -67,12 +55,9 @@ services:
       - SPRING_THYMELEAF_PREFIX=classpath:/templates/
       - SPRING_THYMELEAF_SUFFIX=.html
       
-      # Logging Configuration
+      # Logging Configuration - Simplified
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=INFO
-      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=DEBUG
-      - LOGGING_LEVEL_ORG_HIBERNATE_SQL=DEBUG
-      - LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER=TRACE
-      - LOGGING_PATTERN_CONSOLE=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=INFO
       
       # Server Configuration
       - SERVER_ERROR_INCLUDE_STACKTRACE=never
